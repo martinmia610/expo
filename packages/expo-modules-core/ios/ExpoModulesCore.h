@@ -4,6 +4,10 @@
 // Otherwise they won't be visible in `ExpoModulesCore-Swift.h`.
 #import <React/RCTView.h>
 
+#ifdef RN_FABRIC_ENABLED
+#import <ExpoModulesCore/ExpoFabricViewObjC.h>
+#endif
+
 #if __has_include("ExpoModulesCore-umbrella.h")
 #import "ExpoModulesCore-umbrella.h"
 #endif

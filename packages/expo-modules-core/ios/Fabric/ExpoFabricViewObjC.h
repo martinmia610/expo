@@ -31,7 +31,11 @@
 
 @property (nonatomic, strong, nullable) UIView *contentView;
 
+- (void)dispatchEvent:(nonnull NSString *)eventName payload:(nullable id)payload;
+
 - (void)updateProp:(nonnull NSString *)propName withValue:(nonnull id)value;
+
+- (void)installCallbacks;
 
 - (void)prepareForRecycle;
 
@@ -41,3 +45,18 @@
 - (nonnull NSString *)__injectedModuleName;
 
 @end
+
+#import <React/RCTView.h>
+@class ExpoFabricView;
+@interface ExpoView : RCTView
+@property (nonatomic, nullable, weak) ExpoFabricView *viewManager;
+- (void)dispatchEvent:(nonnull NSString *)eventName payload:(nullable id)payload;
+@end
+
+//open class ExpoViewSw: RCTView {
+//  public weak var viewManager: ExpoFabricView?
+//
+//  public func dispatch(event: String, payload: Any? = nil) {
+//    viewManager?.dispatchEvent(event, payload: payload)
+//  }
+//}

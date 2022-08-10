@@ -65,6 +65,21 @@ public class ExpoFabricView: ExpoFabricViewObjC {
     }
   }
 
+  public override func installCallbacks() {
+    guard let view = contentView, let moduleHolder = moduleHolder else {
+      return
+    }
+
+    moduleHolder.viewManager?.eventNames.forEach { eventName in
+      if view.responds(to: Selector(eventName)) {
+        let handler: AnyCallbackHandlerType = { [weak self] (body: [String: Any]) in
+          self?.dispatchEvent(String(eventName.dropFirst(2)), payload: body)
+        }
+        view.setValue(handler, forKey: eventName)
+      }
+    }
+  }
+
   /**
    The function that is called by Fabric when the view is unmounted and is being enqueued for recycling.
    It can also be called on app reload, so be careful to wipe out any dependencies specific to the currently running AppContext.
@@ -98,8 +113,12 @@ public class ExpoFabricView: ExpoFabricViewObjC {
     guard let view = moduleHolder?.definition.viewManager?.createView() ?? legacyViewManager?.view() else {
       fatalError()
     }
+    if let view = view as? ExpoView {
+      view.viewManager = self
+    }
     // Setting the content view automatically adds the view as a subview.
     contentView = view
+    installCallbacks()
   }
 
   // MARK: - Statics

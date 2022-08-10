@@ -1,11 +1,11 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/EXModuleRegistry.h>
+#import <ExpoModulesCore/ExpoModulesCore.h>
 
 #import <EXAV/EXAVObject.h>
 #import <EXAV/EXVideoPlayerViewControllerDelegate.h>
 
-@interface EXVideoView : UIView <EXVideoPlayerViewControllerDelegate, AVPlayerViewControllerDelegate, EXAVObject>
+@interface EXVideoView : ExpoView <EXVideoPlayerViewControllerDelegate, AVPlayerViewControllerDelegate, EXAVObject>
 
 typedef NS_OPTIONS(NSUInteger, EXVideoFullscreenUpdate)
 {

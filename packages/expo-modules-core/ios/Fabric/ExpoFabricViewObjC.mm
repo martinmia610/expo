@@ -54,7 +54,9 @@ id convertFollyDynamicToId(const folly::dynamic &dyn)
 
 } // namespace
 
-@implementation ExpoFabricViewObjC
+@implementation ExpoFabricViewObjC {
+  ExpoViewEventEmitter::Shared _eventEmitter;
+}
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -96,12 +98,29 @@ id convertFollyDynamicToId(const folly::dynamic &dyn)
   [super updateProps:props oldProps:oldProps];
 }
 
+- (void)updateEventEmitter:(const react::EventEmitter::Shared &)eventEmitter
+{
+  [super updateEventEmitter:eventEmitter];
+  _eventEmitter = std::static_pointer_cast<const ExpoViewEventEmitter>(eventEmitter);
+}
+
+#pragma mark - Events
+
+- (void)dispatchEvent:(nonnull NSString *)eventName payload:(nullable id)payload
+{
+  _eventEmitter->dispatch([eventName UTF8String], [payload](jsi::Runtime &runtime) {
+    return jsi::Value(runtime, expo::convertObjCObjectToJSIValue(runtime, payload));
+  });
+}
+
 #pragma mark - Methods to override in Swift
 
 - (void)updateProp:(nonnull NSString *)propName withValue:(nonnull id)value
 {
   // Implemented in `ExpoFabricView.swift`
 }
+
+- (void)installCallbacks {}
 
 #pragma mark - Methods to override in the subclass
 
@@ -117,4 +136,12 @@ id convertFollyDynamicToId(const folly::dynamic &dyn)
   return nil;
 }
 
+@end
+
+#import <ExpoModulesCore/Swift.h>
+@implementation ExpoView
+- (void)dispatchEvent:(nonnull NSString *)eventName payload:(nullable id)payload
+{
+  [self.viewManager dispatchEvent:eventName payload:payload];
+}
 @end
